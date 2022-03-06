@@ -1,0 +1,16 @@
+image: python:latest
+
+stages:
+- test
+
+1-next_canc:
+  script: python3 test-1-next_canc.py
+
+2-unit_pair0:
+  script: python3 test-2-unit_pair0.py
+
+3-next_unit_pair:
+  script: python3 test-3-next_unit_pair.py
+
+4-remove_unit_pair:
+  script: python3 test-4-remove_unit_pairs.py
