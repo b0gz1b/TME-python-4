@@ -4,7 +4,7 @@
 # Mathieu.Jaume@lip6.fr                      #
 #============================================#
 
-from reduced_ghc import *
+from ghc import *
 
 
 # Symboles annulables
@@ -109,4 +109,4 @@ def remove_unit_pairs(g):
 
 def make_gp(g):
     # g : ghc
-    return remove_unit_pairs(remove_eps_prod(reduce_grammar(g)))
+    return remove_unit_pairs(remove_eps_prod(g))
