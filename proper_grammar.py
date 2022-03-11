@@ -20,8 +20,9 @@ def next_canc(r,eqnt,prev):
     # r : liste de productions
     # eqnt : egalite sur les non terminaux
     # prev : liste de non terminaux de depart
-    # A COMPLETER
-    return
+    def is_der_in_prev(l):
+        return all([is_in(eqnt,symb,prev) for symb in l])
+    return union(eqnt,prev,[s for s,ls in r if exists_such_that(ls,is_der_in_prev)])
 
 def canc(r,eqnt):
     # r : liste de productions
@@ -75,8 +76,12 @@ def unit_pair0(nt,r,eqnt):
     # nt : symboles non terminaux
     # r : liste de productions
     # eqnt : egalite sur les non terminaux
-    # A COMPLETER
-    return
+    u_pair0 = []
+    for s,ls in r:
+        for d in ls:
+            if len(d) == 1 and is_in(eqnt,d[0],nt):
+                u_pair0 = ajout(make_eq_pair_nt(eqnt),(s,d[0]),u_pair0)
+    return u_pair0
 
 def next_unit_pair(nt,r,eqnt,prev):
     # nt : symboles non terminaux
@@ -84,7 +89,15 @@ def next_unit_pair(nt,r,eqnt,prev):
     # eqnt : egalite sur les non terminaux
     # prev : liste de non terminaux de depart
     # A COMPLETER
-    return
+    eqpnt = make_eq_pair_nt(eqnt)
+    u_pair = []
+    for p1,p2 in prev:
+        for s,ls in r:
+            if eqnt(s,p2):
+                for d in ls:
+                    if len(d) == 1 and is_in(eqnt,d[0],nt):
+                        u_pair = ajout(eqpnt,(p1,d[0]),u_pair)
+    return union(eqpnt,prev,u_pair)
 
 def unit_pair(nt,r,eqnt):
     # nt : symboles non terminaux
@@ -102,8 +115,26 @@ def unit_pair(nt,r,eqnt):
 def remove_unit_pairs(g):
     # g : ghc
     # A COMPLETER
-    return
-
+    nt,t,r,si,eqnt = g
+    nr = []
+    eqpnt = make_eq_pair_nt(eqnt)
+    u = unit_pair(nt,r,eqnt)
+    for s,ls in r:
+        for d in ls:
+            if len(d)==1:
+                if is_in(eqpnt,(s,d[0]),u):
+                    for ps in prods_s(r,eqnt,d[0]):
+                        if len(ps)!=1 or not is_in(eqnt,ps[0],nt):
+                            print("oui : J'ajoute",s,"->",ps)
+                            nr = add_prod(s,ps,nt,nr,eqnt)
+                else:
+                    print("non : J'ajoute",s,"->",d[0])
+                    nr = add_prod(s,d[0],nt,nr,eqnt)
+            else:
+                print("ah : J'ajoute",s,"->",d)
+                nr = add_prod(s,d,nt,nr,eqnt)
+    print(nr)
+    return (nt,t,nr,si,eqnt)
 # Construction d'une grammaire propre
 # -----------------------------------
 
