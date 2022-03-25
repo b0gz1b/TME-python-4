@@ -115,23 +115,29 @@ def unit_pair(nt,r,eqnt):
 def remove_unit_pairs(g):
     # g : ghc
     # A COMPLETER
+    def _add_prods_s(nr,r,eqnt,v1,v2,nt,u):
+        for p in prods_s(r,eqnt,v1):
+            if len(p)==1: # Si la production est unitaire
+                if is_in(eqnt,(v1,p[0]),u) and not eqnt(v2,p[0]):
+                    nr = _add_prods_s(nr,r,eqnt,p[0],v2,nt,u)
+                elif not is_in(eqnt,p[0],nt):
+                    nr = add_prod(v2,p,nt,nr,eqnt)
+            else:
+                nr = add_prod(v2,p,nt,nr,eqnt) # Dans tout les autres cas on l'ajoute
+        return nr
     nt,t,r,si,eqnt = g
     nr = []
     eqpnt = make_eq_pair_nt(eqnt)
     u = unit_pair(nt,r,eqnt)
-    for variable,productions in r:
-        for prod in productions:
-            if len(prod)==1:
-                if not is_in(eqpnt,(variable,prod[0]),u):
+    for variable,productions in r: # On parcourt les productions de g
+        for prod in productions: 
+            if len(prod)==1: # Si la production est de longueur 1 elle est soit dans les paires unitaire soit dans les terminaux
+                if not is_in(eqpnt,(variable,prod[0]),u): # Si elle n'est pas dans les paires unitaires on l'ajoute
                     nr = add_prod(variable,prod,nt,nr,eqnt)
-                else:
-                    for p in prods_s(r,eqnt,prod[0]):
-                        if len(p)==1:
-                            if is_in(eqnt,p[0],nt):
-                                continue
-                        nr = add_prod(variable,p,nt,nr,eqnt)
+                else: # Sinon on doit ajouter toutes les productions à partir du deuxième membre de la paire
+                    nr = _add_prods_s(nr,r,eqnt,prod[0],variable,nt,u)
             else:
-                nr = add_prod(variable,prod,nt,nr,eqnt)
+                nr = add_prod(variable,prod,nt,nr,eqnt) # Si la production est composée de plusieurs symboles on l'ajoute
     return (nt,t,nr,si,eqnt)
 # Construction d'une grammaire propre
 # -----------------------------------
