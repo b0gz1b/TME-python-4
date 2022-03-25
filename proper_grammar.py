@@ -119,21 +119,19 @@ def remove_unit_pairs(g):
     nr = []
     eqpnt = make_eq_pair_nt(eqnt)
     u = unit_pair(nt,r,eqnt)
-    for s,ls in r:
-        for d in ls:
-            if len(d)==1:
-                if is_in(eqpnt,(s,d[0]),u):
-                    for ps in prods_s(r,eqnt,d[0]):
-                        if len(ps)!=1 or not is_in(eqnt,ps[0],nt):
-                            print("oui : J'ajoute",s,"->",ps)
-                            nr = add_prod(s,ps,nt,nr,eqnt)
+    for variable,productions in r:
+        for prod in productions:
+            if len(prod)==1:
+                if not is_in(eqpnt,(variable,prod[0]),u):
+                    nr = add_prod(variable,prod,nt,nr,eqnt)
                 else:
-                    print("non : J'ajoute",s,"->",d[0])
-                    nr = add_prod(s,d[0],nt,nr,eqnt)
+                    for p in prods_s(r,eqnt,prod[0]):
+                        if len(p)==1:
+                            if is_in(eqnt,p[0],nt):
+                                continue
+                        nr = add_prod(variable,p,nt,nr,eqnt)
             else:
-                print("ah : J'ajoute",s,"->",d)
-                nr = add_prod(s,d,nt,nr,eqnt)
-    print(nr)
+                nr = add_prod(variable,prod,nt,nr,eqnt)
     return (nt,t,nr,si,eqnt)
 # Construction d'une grammaire propre
 # -----------------------------------
